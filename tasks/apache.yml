@@ -19,14 +19,14 @@
 
 - name: apache | set httpd.conf 
   template: >
-    src={{ apache.config|default('httpd.conf.j2') }}
+    src={{ apache_config|default('httpd.conf.j2') }}
     dest={{ path_apache_httpd }}
   notify:
     - apache-restart
 
 - name: apache | set ports.conf
   template: >
-    src={{ apache.ports|default('ports.conf.j2') }}
+    src={{ apache_ports|default('ports.conf.j2') }}
     dest={{ path_apache_ports }}
   notify:
     - apache-restart
@@ -34,13 +34,13 @@
 - name: apache | apache2 lock
   file: >
     path=/var/lock/apache2
-    owner={{ apache.user }}
-    group={{ apache.group }}
+    owner={{ apache_user }}
+    group={{ apache_group }}
     mode=0755
 
 - name: apache | set envvars
   template: >
-    src=envvars.j2
+    src={{ apache_envvars|default('envvars.j2') }}
     dest=/etc/apache2/envvars
     owner=root
     group=root
@@ -51,8 +51,8 @@
 
 - name: apache | install apache modules
   command: a2enmod {{ item }}
-  with_items: apache.modules
-  when: apache.modules is defined
+  with_items: apache_modules
+  when: apache_modules is defined
   notify:
     - apache-restart
 

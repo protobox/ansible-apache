@@ -1,0 +1,29 @@
+
+#apache_config: path/to/httpd.conf.j2
+#apache_ports: path/to/ports.conf.j2
+#apache_envvars: path/to/envvars.j2
+
+apache_modules:
+  - rewrite
+  - ssl
+
+apache_user: vagrant
+apache_group: vagrant
+
+apache_default_vhost: false
+apache_mpm_module: prefork
+
+apache_vhosts:
+  - name: app
+    servername: app.dev
+    serveraliases:
+      - 'www.app.dev'
+    docroot: /srv/www/web/protobox
+    port: '80'
+    setenv:
+      - 'APP_ENV dev'
+    override:
+      - All
+    ssl: 0
+    ssl_cert: '/srv/www/data/ssl/server.crt'
+    ssl_key: '/srv/www/data/ssl/server.key'

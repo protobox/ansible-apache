@@ -4,7 +4,7 @@
 - include: apache.yml
 
 - include: virtualhosts.yml
-  when: apache.vhosts is defined
+  when: apache_vhosts is defined
 
-- include: protobox.yml
-  when: protobox_env is defined and protobox_env == 'vagrant'
+#- include: protobox.yml
+#  when: protobox_env is defined and protobox_env == 'vagrant'

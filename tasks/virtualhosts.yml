@@ -10,13 +10,13 @@
     src={{ item.template|default('default.conf.j2') }}
     dest=/etc/apache2/sites-available/{{ item.name }}.conf
     mode=0640
-  with_items: apache.vhosts
+  with_items: apache_vhosts
   notify:
     - apache-restart
 
 - name: virtualhosts | activates our virtualhost
   command: a2ensite {{ item.name }}.conf
-  with_items: apache.vhosts
+  with_items: apache_vhosts
   notify:
     - apache-restart
 
@@ -35,12 +35,12 @@
 
 - name: virtualhosts | rolling back - Removing our virtualhost
   command: a2dissite {{ item.name }}.conf
-  with_items: apache.vhosts
+  with_items: apache_vhosts
   when: apache_result|failed and (item.ssl is not defined or item.ssl != 1)
 
 - name: virtualhosts | rolling back - Removing our ssl virtualhost
   command: a2dissite {{ item.name }}_ssl.conf
-  with_items: apache.vhosts
+  with_items: apache_vhosts
   when: apache_result|failed and (item.ssl is defined and item.ssl == 1)
 
 - name: virtualhosts | rolling back - Ending playbook
