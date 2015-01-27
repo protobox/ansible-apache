@@ -1,6 +1,18 @@
 - name: main | add vars
   include_vars: "{{ ansible_os_family }}.yml"
 
+# Figure out apache version
+
+- name: apache | get installed version of apache
+  command: "{{ service_apache }} -v"
+  changed_when: false
+  always_run: yes
+  register: _apache_version
+
+- name: apache | create apache_version variable
+  set_fact:
+    apache_version: "{{ _apache_version.stdout.split()[2].split('/')[1] }}"
+
 - include: apache.yml
 
 - include: virtualhosts.yml

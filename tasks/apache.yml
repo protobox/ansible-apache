@@ -26,8 +26,17 @@
 
 - name: apache | set ports.conf
   template: >
-    src={{ apache_ports|default('ports.conf.j2') }}
+    src={{ apache_ports|default('2.2/ports.conf.j2') }}
     dest={{ path_apache_ports }}
+  when: "apache_version.split('.')[1] == '2'"
+  notify:
+    - apache-restart
+
+- name: apache | set ports.conf
+  template: >
+    src={{ apache_ports|default('2.4/ports.conf.j2') }}
+    dest={{ path_apache_ports }}
+  when: "apache_version.split('.')[1] == '4'"
   notify:
     - apache-restart
 
