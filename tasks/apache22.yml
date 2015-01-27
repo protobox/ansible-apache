@@ -1,14 +1,14 @@
 
 # Configuration
 
-- name: install22 | set httpd.conf 
+- name: apache22 | set httpd.conf 
   template: >
     src={{ apache_config|default('httpd.conf.j2') }}
     dest={{ path_apache_httpd }}
   notify:
     - apache-restart
 
-- name: install22 | set ports.conf
+- name: apache22 | set ports.conf
   template: >
     src={{ apache_ports|default('2.2/ports.conf.j2') }}
     dest={{ path_apache_ports }}
@@ -17,7 +17,7 @@
 
 # Virtual Hosts
 
-- name: virtualhosts | add apache configurations
+- name: apache22 | add apache configurations
   template: >
     src={{ item.template|default('2.2/default.conf.j2') }}
     dest=/etc/apache2/sites-available/{{ item.name }}.conf
@@ -27,7 +27,7 @@
   notify:
     - apache-restart
 
-- name: virtualhosts | activates our virtualhost
+- name: apache22 | activates our virtualhost
   command: a2ensite {{ item.name }}.conf
   with_items: apache_vhosts
   when: apache_vhosts is defined
