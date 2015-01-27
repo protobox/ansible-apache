@@ -1,6 +1,8 @@
 - name: main | add vars
   include_vars: "{{ ansible_os_family }}.yml"
 
+- include: install.yml
+
 # Figure out apache version
 
 - name: main | get installed version of apache
@@ -13,12 +15,12 @@
   set_fact:
     apache_version: "{{ _apache_version.stdout.split()[2].split('/')[1] }}"
 
-- include: install.yml
+- include: apache.yml
 
-- include: install22.yml
+- include: apache22.yml
   when: "apache_version.split('.')[1] == '2'"
 
-- include: install24.yml
+- include: apache24.yml
   when: "apache_version.split('.')[1] == '4'"
 
 #- include: protobox.yml
