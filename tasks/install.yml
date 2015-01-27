@@ -1,6 +1,6 @@
 # Package
 
-- name: apache | install debian apache
+- name: install | install debian apache
   apt: >
     pkg={{ item }} 
     state=latest
@@ -8,7 +8,7 @@
   with_items: pkgs_apache
   when: ansible_os_family == 'Debian'
 
-- name: apache | install rpm apache
+- name: install | install rpm apache
   yum: >
     pkg={{ item }} 
     state=latest
@@ -17,37 +17,14 @@
 
 # Configuration
 
-- name: apache | set httpd.conf 
-  template: >
-    src={{ apache_config|default('httpd.conf.j2') }}
-    dest={{ path_apache_httpd }}
-  notify:
-    - apache-restart
-
-- name: apache | set ports.conf
-  template: >
-    src={{ apache_ports|default('2.2/ports.conf.j2') }}
-    dest={{ path_apache_ports }}
-  when: "apache_version.split('.')[1] == '2'"
-  notify:
-    - apache-restart
-
-- name: apache | set ports.conf
-  template: >
-    src={{ apache_ports|default('2.4/ports.conf.j2') }}
-    dest={{ path_apache_ports }}
-  when: "apache_version.split('.')[1] == '4'"
-  notify:
-    - apache-restart
-
-- name: apache | apache2 lock
+- name: install | apache2 lock
   file: >
     path=/var/lock/apache2
     owner={{ apache_user }}
     group={{ apache_group }}
     mode=0755
 
-- name: apache | set envvars
+- name: install | set envvars
   template: >
     src={{ apache_envvars|default('envvars.j2') }}
     dest=/etc/apache2/envvars
@@ -58,27 +35,27 @@
     - apache-restart
   when: ansible_os_family == 'Debian'
 
-- name: apache | install apache modules
+- name: install | install apache modules
   command: a2enmod {{ item }}
   with_items: apache_modules
   when: apache_modules is defined
   notify:
     - apache-restart
 
-- name: apache | check ssl if module is enabled
+- name: install | check ssl if module is enabled
   command: sudo apache2ctl -M
   register: apache_result
   ignore_errors: True
 
-- name: apache | verify ssl directory
+- name: install | verify ssl directory
   file: >
     path=/etc/apache2/ssl
     state=directory
   when: "'ssl_module' in apache_result.stdout"
 
-- name: apache | create self-signed SSL cert
+- name: install | create self-signed SSL cert
   command: >
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=US/ST=Oregon/L=Portland/O=IT/CN={{ ansible_fqdn }}" -keyout /etc/apache2/ssl/server.key -extensions v3_ca -out /etc/apache2/ssl/server.crt
+  when: "'ssl_module' in apache_result.stdout"
   notify:
     - apache-restart
-  when: "'ssl_module' in apache_result.stdout"

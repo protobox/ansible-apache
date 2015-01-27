@@ -3,17 +3,23 @@
 
 # Figure out apache version
 
-- name: apache | get installed version of apache
+- name: main | get installed version of apache
   command: "{{ service_apache }} -v"
   changed_when: false
   always_run: yes
   register: _apache_version
 
-- name: apache | create apache_version variable
+- name: main | create apache_version variable
   set_fact:
     apache_version: "{{ _apache_version.stdout.split()[2].split('/')[1] }}"
 
-- include: apache.yml
+- include: install.yml
+
+- include: install22.yml
+  when: "apache_version.split('.')[1] == '2'"
+
+- include: install24.yml
+  when: "apache_version.split('.')[1] == '4'"
 
 - include: virtualhosts.yml
   when: apache_vhosts is defined

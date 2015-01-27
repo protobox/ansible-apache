@@ -1,0 +1,24 @@
+
+# Configuration
+
+# echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/servername.conf
+- name: install24 | set servername.conf 
+  template: >
+    src={{ apache_config|default('httpd.conf.j2') }}
+    dest=/etc/apache2/conf-available/servername.conf
+  notify:
+    - apache-restart
+
+- name: install24 | enable servername.conf 
+  command: a2enconf servername
+  notify:
+    - apache-restart
+
+- name: install24 | set ports.conf
+  template: >
+    src={{ apache_ports|default('2.4/ports.conf.j2') }}
+    dest={{ path_apache_ports }}
+  notify:
+    - apache-restart
+
+
