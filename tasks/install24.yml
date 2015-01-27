@@ -21,4 +21,21 @@
   notify:
     - apache-restart
 
+# Virtual Hosts
 
+- name: virtualhosts | add apache configurations
+  template: >
+    src={{ item.template|default('2.4/default.conf.j2') }}
+    dest=/etc/apache2/sites-available/{{ item.name }}.conf
+    mode=0640
+  with_items: apache_vhosts
+  when: apache_vhosts is defined
+  notify:
+    - apache-restart
+
+- name: virtualhosts | activates our virtualhost
+  command: a2ensite {{ item.name }}.conf
+  with_items: apache_vhosts
+  when: apache_vhosts is defined
+  notify:
+    - apache-restart

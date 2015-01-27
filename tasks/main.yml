@@ -21,8 +21,5 @@
 - include: install24.yml
   when: "apache_version.split('.')[1] == '4'"
 
-- include: virtualhosts.yml
-  when: apache_vhosts is defined
-
 #- include: protobox.yml
 #  when: protobox_env is defined and protobox_env == 'vagrant'
